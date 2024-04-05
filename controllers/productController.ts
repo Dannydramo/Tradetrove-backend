@@ -100,12 +100,12 @@ export const getProductsByVendor = catchAsync(
 export const editProduct = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
         const { productId } = req.params;
-        const { productName, description, category, price, quantity, images } =
+        const { productName, description, category, price, inStock, images } =
             req.body;
 
         const updatedProduct = await Product.findByIdAndUpdate(
             productId,
-            { productName, description, category, price, quantity, images },
+            { productName, description, category, price, inStock, images },
             { new: true }
         );
         if (!updatedProduct) {
