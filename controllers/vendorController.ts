@@ -5,6 +5,12 @@ import { createSendToken } from '../utils/createToken';
 import AppError from '../utils/appError';
 import { VendorFilteredBody } from '../types/VendorInterface';
 import { ApiResponse } from '../helpers/responseHelper';
+import {
+    calculateTotalAmount,
+    calculateTotalProductsForVendor,
+    calculateTotalSalesForVendor,
+    calculateTotalUsersForVendor,
+} from '../helpers/vendorHelper';
 
 declare global {
     namespace Express {
@@ -155,6 +161,30 @@ export const getAllVendor = catchAsync(
             'Vendors fetches successfully',
             'success',
             vendors
+        );
+    }
+);
+export const getVendorStatistics = catchAsync(
+    async (req: Request, res: Response) => {
+        const vendorId = req.vendor.id;
+
+        const totalUsers = await calculateTotalUsersForVendor(vendorId);
+        const totalSales = await calculateTotalSalesForVendor(vendorId);
+        const totalAmount = await calculateTotalAmount();
+        const totalProducts = await calculateTotalProductsForVendor(vendorId);
+
+        const payload = {
+            totalAmount,
+            totalProducts,
+            totalSales,
+            totalUsers,
+        };
+        return ApiResponse(
+            201,
+            res,
+            'Vendor statistics fetched successfully',
+            'success',
+            payload
         );
     }
 );

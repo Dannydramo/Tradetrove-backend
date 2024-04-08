@@ -6,6 +6,7 @@ import {
     getVendorDetails,
     updateVendorDetails,
     changeVendorPassword,
+    getVendorStatistics,
 } from '../controllers/vendorController';
 import { vendorProtect } from '../middleware/vendorMiddleware';
 import { getProductsByVendor } from '../controllers/productController';
@@ -19,5 +20,5 @@ router.patch('/update-details', vendorProtect, updateVendorDetails);
 router.patch('/change-password', vendorProtect, changeVendorPassword);
 router.get('/get-vendors', getAllVendor);
 router.get('/products', vendorProtect, getProductsByVendor);
-
+router.get('/statistics', vendorProtect, getVendorStatistics);
 export default router;
