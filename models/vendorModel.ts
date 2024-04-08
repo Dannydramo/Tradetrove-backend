@@ -42,6 +42,12 @@ const vendorSchema = new mongoose.Schema({
         default: true,
         select: false,
     },
+    orders: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Order',
+        },
+    ],
     created_at: {
         type: Date,
         default: Date.now,
