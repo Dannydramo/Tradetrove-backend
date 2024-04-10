@@ -11,7 +11,8 @@ import {
     calculateTotalSalesForVendor,
     calculateTotalUsersForVendor,
 } from '../helpers/vendorHelper';
-
+import { format } from 'date-fns';
+import Order from './../models/orderModel';
 declare global {
     namespace Express {
         interface Request {
@@ -179,6 +180,56 @@ export const getVendorStatistics = catchAsync(
             totalSales,
             totalUsers,
         };
+        return ApiResponse(
+            201,
+            res,
+            'Vendor statistics fetched successfully',
+            'success',
+            payload
+        );
+    }
+);
+
+export const getAllMonthSalesAmount = catchAsync(
+    async (req: Request, res: Response) => {
+        const vendorId = req.vendor.id;
+
+        const monthlyAmounts = await Order.aggregate([
+            { $match: { vendor: vendorId } },
+            {
+                $group: {
+                    _id: {
+                        $dateToString: {
+                            format: '%m-%Y',
+                            date: '$createdAt',
+                        },
+                    },
+                    totalAmount: { $sum: '$totalPrice' },
+                },
+            },
+        ]);
+
+        const allMonths = Array.from({ length: 12 }, (_, index) => index + 1);
+
+        const data = allMonths.map((month) => {
+            const monthStr = month.toString().padStart(2, '0');
+            const yearStr = new Date().getFullYear();
+            const label = format(new Date(`${yearStr}-${monthStr}-01`), 'MMM');
+            const match = monthlyAmounts.find((item) => {
+                const [foundMonth, foundYear] = item._id.split('-');
+                return parseInt(foundMonth) === month && foundYear === yearStr;
+            });
+            const totalAmount = match ? match.totalAmount : 0;
+            return { label, totalAmount };
+        });
+
+        const labels = data.map((item) => item.label);
+        const amounts = data.map((item) => item.totalAmount);
+        const payload = {
+            labels,
+            amounts,
+        };
+
         return ApiResponse(
             201,
             res,
