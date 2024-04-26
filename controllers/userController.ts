@@ -1,8 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import catchAsync from './../utils/catchAsync';
 import User from './../models/userModel';
+import Vendor from './../models/vendorModel';
 import { createSendToken } from '../utils/createToken';
 import AppError from '../utils/appError';
+import { ApiResponse } from '../helpers/responseHelper';
+import { FilterQuery } from 'mongoose';
+import { VendorTypes } from '../types/VendorInterface';
 
 export const registerUser = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -27,5 +31,27 @@ export const loginUser = catchAsync(
             return next(new AppError('Incorrect email or password', 401));
         }
         createSendToken(user, 201, res, 'Account created successfully');
+    }
+);
+
+export const vendorByBusinessName = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const { businessName, vendorId } = req.query;
+
+        const vendor = businessName
+            ? await Vendor.findOne({ businessName } as FilterQuery<VendorTypes>)
+            : await Vendor.findById(vendorId);
+
+        if (!vendor) {
+            return next(new AppError('Vendor not found', 404));
+        }
+
+        return ApiResponse(
+            201,
+            res,
+            'Vendor fetched successfully',
+            'success',
+            vendor
+        );
     }
 );

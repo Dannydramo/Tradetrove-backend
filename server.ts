@@ -1,6 +1,7 @@
 import index from './index';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import setupSocket from './socket/socketSetup';
 
 dotenv.config({ path: './.env' });
 
@@ -15,6 +16,7 @@ mongoose.connect(DB).then(() => {
     console.log('Connection Successful');
 });
 
-index.listen(port, () => {
+const server = index.listen(port, () => {
     console.log(`app runnning on port ${port}`);
 });
+setupSocket(server);

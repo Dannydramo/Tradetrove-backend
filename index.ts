@@ -8,9 +8,14 @@ import cookieParser from 'cookie-parser';
 import routes from './routes/index';
 import globalErrorHandler from './controllers/errorController';
 const app = express();
+app.use((req, res, next) => {
+    if (req.originalUrl === '/api/v1/payment/webhook') {
+        next();
+    } else {
+        express.json()(req, res, next);
+    }
+});
 
-app.use(express.json({ limit: '10mb' }));
-app.use(express.json());
 app.use(cors());
 
 if (process.env.NODE_ENV === 'development') {

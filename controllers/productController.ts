@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import catchAsync from './../utils/catchAsync';
 import Product from './../models/productModel';
-import Vendor from './../models/vendorModel';
 import AppError from '../utils/appError';
 import { ApiResponse } from '../helpers/responseHelper';
 
@@ -60,7 +59,9 @@ export const getAllProducts = catchAsync(
 export const getProductById = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
         const { productId } = req.params;
-        const product = await Product.findById(productId).populate('vendor');
+        const product = await Product.findById(productId)
+            .populate('vendor')
+            // .populate('reviews');
         if (!product) {
             return next(new AppError('Could not find product details', 400));
         }
@@ -77,7 +78,8 @@ export const getProductById = catchAsync(
 
 export const getProductsByVendor = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
-        const products = await Product.find({ vendor: req.vendor.id });
+        const vendorId = req.params.vendorId || req.vendor.id;
+        const products = await Product.find({ vendor: vendorId });
 
         if (!products) {
             return next(

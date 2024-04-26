@@ -6,7 +6,7 @@ import {
     getAllProducts,
     getProductById,
 } from '../controllers/productController';
-import { vendorProtect } from '../middleware/vendorMiddleware';
+import { vendorProtect } from '../middleware/authMiddleware';
 
 const router = express.Router();
 

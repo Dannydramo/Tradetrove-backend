@@ -1,12 +1,13 @@
 import Product from './../models/productModel';
 import Order from './../models/orderModel';
+import mongoose from 'mongoose';
 
 export const calculateTotalUsersForVendor = async (
     vendorId: string
 ): Promise<number> => {
     try {
         const totalUsersResult = await Order.aggregate([
-            { $match: { vendor: vendorId } },
+            { $match: { vendor: new mongoose.Types.ObjectId(vendorId) } },
             { $group: { _id: '$user' } },
             { $count: 'totalUsers' },
         ]);
@@ -23,7 +24,7 @@ export const calculateTotalSalesForVendor = async (
 ): Promise<number> => {
     try {
         const totalSalesResult = await Order.aggregate([
-            { $match: { vendor: vendorId } },
+            { $match: { vendor: new mongoose.Types.ObjectId(vendorId) } },
             { $group: { _id: null, totalSales: { $sum: '$totalPrice' } } },
         ]);
 
@@ -34,9 +35,12 @@ export const calculateTotalSalesForVendor = async (
     }
 };
 
-export const calculateTotalAmount = async (): Promise<number> => {
+export const calculateTotalAmount = async (
+    vendorId: string
+): Promise<number> => {
     try {
         const totalAmountResult = await Order.aggregate([
+            { $match: { vendor: vendorId } },
             { $group: { _id: null, totalAmount: { $sum: '$totalPrice' } } },
         ]);
 

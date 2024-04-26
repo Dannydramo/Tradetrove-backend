@@ -24,4 +24,6 @@ export interface VendorFilteredBody {
     state?: string;
     country?: string;
     logo?: string;
+    description?: string;
+    coverImage?: String;
 }

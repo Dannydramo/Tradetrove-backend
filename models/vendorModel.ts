@@ -37,6 +37,8 @@ const vendorSchema = new mongoose.Schema({
     city: String,
     state: String,
     country: String,
+    description: String,
+    coverImage: String,
     active: {
         type: Boolean,
         default: true,
@@ -46,6 +48,7 @@ const vendorSchema = new mongoose.Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Order',
+            select: false,
         },
     ],
     created_at: {

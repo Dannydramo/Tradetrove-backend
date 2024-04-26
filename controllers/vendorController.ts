@@ -13,6 +13,7 @@ import {
 } from '../helpers/vendorHelper';
 import { format } from 'date-fns';
 import Order from './../models/orderModel';
+import mongoose from 'mongoose';
 declare global {
     namespace Express {
         interface Request {
@@ -65,7 +66,8 @@ export const loginVendor = catchAsync(
 
 export const getVendorDetails = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
-        const vendor = await Vendor.findById(req.vendor.id);
+        const vendorId = req.params.vendorId || req.vendor.id;
+        const vendor = await Vendor.findById(vendorId);
         if (!vendor) {
             return next(new AppError('Could not find vendor', 404));
         }
@@ -101,7 +103,9 @@ export const updateVendorDetails = catchAsync(
             'city',
             'state',
             'country',
-            'logo'
+            'logo',
+            'description',
+            'coverImage'
         );
 
         const updatedVendor = await Vendor.findByIdAndUpdate(
@@ -159,7 +163,7 @@ export const getAllVendor = catchAsync(
         return ApiResponse(
             201,
             res,
-            'Vendors fetches successfully',
+            'Vendors fetched successfully',
             'success',
             vendors
         );
@@ -171,7 +175,7 @@ export const getVendorStatistics = catchAsync(
 
         const totalUsers = await calculateTotalUsersForVendor(vendorId);
         const totalSales = await calculateTotalSalesForVendor(vendorId);
-        const totalAmount = await calculateTotalAmount();
+        const totalAmount = await calculateTotalAmount(vendorId);
         const totalProducts = await calculateTotalProductsForVendor(vendorId);
 
         const payload = {
@@ -195,41 +199,34 @@ export const getAllMonthSalesAmount = catchAsync(
         const vendorId = req.vendor.id;
 
         const monthlyAmounts = await Order.aggregate([
-            { $match: { vendor: vendorId } },
+            {
+                $match: { vendor: new mongoose.Types.ObjectId(vendorId) },
+            },
             {
                 $group: {
                     _id: {
-                        $dateToString: {
-                            format: '%m-%Y',
-                            date: '$createdAt',
-                        },
+                        month: { $month: '$createdAt' },
+                        year: { $year: '$createdAt' },
                     },
                     totalAmount: { $sum: '$totalPrice' },
                 },
             },
         ]);
 
-        const allMonths = Array.from({ length: 12 }, (_, index) => index + 1);
-
-        const data = allMonths.map((month) => {
-            const monthStr = month.toString().padStart(2, '0');
-            const yearStr = new Date().getFullYear();
-            const label = format(new Date(`${yearStr}-${monthStr}-01`), 'MMM');
-            const match = monthlyAmounts.find((item) => {
-                const [foundMonth, foundYear] = item._id.split('-');
-                return parseInt(foundMonth) === month && foundYear === yearStr;
-            });
+        const currentYear = new Date().getFullYear();
+        const labels: any = [];
+        const amounts = Array.from({ length: 12 }, (_, index) => {
+            const month = index + 1;
+            const match = monthlyAmounts.find(
+                (item) =>
+                    item._id.month === month && item._id.year === currentYear
+            );
             const totalAmount = match ? match.totalAmount : 0;
-            return { label, totalAmount };
+            labels.push(format(new Date(`${currentYear}-${month}-01`), 'MMM'));
+            return totalAmount;
         });
 
-        const labels = data.map((item) => item.label);
-        const amounts = data.map((item) => item.totalAmount);
-        const payload = {
-            labels,
-            amounts,
-        };
-
+        const payload = { labels, amounts };
         return ApiResponse(
             201,
             res,

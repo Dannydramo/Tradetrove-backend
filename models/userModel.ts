@@ -5,8 +5,7 @@ import { UserTypes } from '../types/UserInterface';
 const userSchema = new mongoose.Schema({
     username: {
         type: String,
-        unique: true,
-        required: [true, 'Business name is required'],
+        required: [true, 'User name is required'],
     },
     email: {
         type: String,

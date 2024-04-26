@@ -9,8 +9,8 @@ import {
     getVendorStatistics,
     getAllMonthSalesAmount,
 } from '../controllers/vendorController';
-import { vendorProtect } from '../middleware/vendorMiddleware';
 import { getProductsByVendor } from '../controllers/productController';
+import { vendorProtect } from '../middleware/authMiddleware';
 
 const router = express.Router();
 
