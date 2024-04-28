@@ -5,7 +5,7 @@
     "main": "index.ts",
     "type": "module",
     "scripts": {
-        "start": "node server.ts",
+        "start": "ts-node --loader ts-node/esm server.ts",
         "dev": "nodemon server.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
