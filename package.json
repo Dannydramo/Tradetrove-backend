@@ -3,6 +3,7 @@
     "version": "1.0.0",
     "description": "A multi-vendor ecommerce marketplace",
     "main": "index.ts",
+    "type": "module",
     "scripts": {
         "start": "node server.ts",
         "dev": "nodemon server.ts",

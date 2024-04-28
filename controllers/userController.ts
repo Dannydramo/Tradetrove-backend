@@ -27,10 +27,29 @@ export const loginUser = catchAsync(
             return next(new AppError('Please provide email and password', 400));
         }
         const user = await User.findOne({ email }).select('+password');
-        if (!user || !(await user.correctPassword(password, user.password))) {
+        if (!user || !(await user.correctPassword(password, user.password!))) {
             return next(new AppError('Incorrect email or password', 401));
         }
         createSendToken(user, 201, res, 'Account created successfully');
+    }
+);
+
+export const getUserdetails = catchAsync(
+    async (req: Request, res: Response, next: NextFunction) => {
+        const userId = req.params.userId || req.user.id;
+        const user = await User.findById(userId);
+        if (!user) {
+            return next(new AppError('Could not find vendor', 404));
+        }
+        user.password = undefined;
+        user.confirmPassword = undefined;
+        return ApiResponse(
+            201,
+            res,
+            'user fetched successfully',
+            'success',
+            user
+        );
     }
 );
 

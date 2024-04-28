@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema({
 });
 userSchema.pre<UserTypes>('save', async function (next: () => void) {
     if (!this.isModified('password')) return next();
-    this.password = await bcrypt.hash(this.password, 12);
+    this.password = await bcrypt.hash(this.password!, 12);
     this.confirmPassword = undefined;
     next();
 });

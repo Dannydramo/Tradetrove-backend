@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 export interface UserTypes extends Document {
     username: string;
     email: string;
-    password: string;
+    password: string | undefined;
     confirmPassword: string | undefined;
     active: boolean;
     created_at: Date;

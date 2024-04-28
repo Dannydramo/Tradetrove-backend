@@ -1,5 +1,4 @@
-import express, { Request, Response, NextFunction } from 'express';
-
+import { Request, Response, NextFunction } from 'express';
 import Stripe from 'stripe';
 import Order from '../models/orderModel';
 
@@ -11,7 +10,7 @@ export const createCheckoutSession = async (
     const stripe = new Stripe(process.env.STRIPE_KEY!);
     const customer = await stripe.customers.create({
         metadata: {
-            userId: '662b7371eb9f13d65b9e132c',
+            userId: req.body.userId,
             cart: JSON.stringify(req.body.cartItem),
             vendorId: req.body.vendorId,
         },
