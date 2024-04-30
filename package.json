@@ -5,7 +5,7 @@
     "main": "index.ts",
     "type": "module",
     "scripts": {
-        "start": "node server.js",
+        "start": "node ./build/server.js",
         "build": "npm install && tsc",
         "dev": "nodemon server.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
