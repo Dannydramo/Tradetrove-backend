@@ -1,0 +1,24 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const router = express_1.default.Router();
+const vendorRoute_1 = __importDefault(require("./vendorRoute"));
+const userRoute_1 = __importDefault(require("./userRoute"));
+const productRoute_1 = __importDefault(require("./productRoute"));
+const paymentRoute_1 = __importDefault(require("./paymentRoute"));
+const orderRoute_1 = __importDefault(require("./orderRoute"));
+const conversationRoute_1 = __importDefault(require("./conversationRoute"));
+const messageRoute_1 = __importDefault(require("./messageRoute"));
+const reviewRoute_1 = __importDefault(require("./reviewRoute"));
+router.use('/vendor', vendorRoute_1.default);
+router.use('/user', userRoute_1.default);
+router.use('/product', productRoute_1.default);
+router.use('/payment', paymentRoute_1.default);
+router.use('/orders', orderRoute_1.default);
+router.use('/conversation', conversationRoute_1.default);
+router.use('/message', messageRoute_1.default);
+router.use('/review', reviewRoute_1.default);
+exports.default = router;

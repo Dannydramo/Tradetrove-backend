@@ -1,0 +1,20 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const vendorController_1 = require("../controllers/vendorController");
+const productController_1 = require("../controllers/productController");
+const authMiddleware_1 = require("../middleware/authMiddleware");
+const router = express_1.default.Router();
+router.post('/auth/register', vendorController_1.registerVendor);
+router.post('/auth/login', vendorController_1.loginVendor);
+router.get('/get-vendor-details', authMiddleware_1.vendorProtect, vendorController_1.getVendorDetails);
+router.patch('/update-details', authMiddleware_1.vendorProtect, vendorController_1.updateVendorDetails);
+router.patch('/change-password', authMiddleware_1.vendorProtect, vendorController_1.changeVendorPassword);
+router.get('/get-vendors', vendorController_1.getAllVendor);
+router.get('/products', authMiddleware_1.vendorProtect, productController_1.getProductsByVendor);
+router.get('/statistics', authMiddleware_1.vendorProtect, vendorController_1.getVendorStatistics);
+router.get('/monthly-amount', authMiddleware_1.vendorProtect, vendorController_1.getAllMonthSalesAmount);
+exports.default = router;
