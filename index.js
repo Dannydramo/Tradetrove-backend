@@ -9,7 +9,7 @@ const routes = require('./routes/index');
 const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
-
+app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
     if (req.originalUrl === '/api/v1/payment/webhook') {
         express.raw({ type: 'application/json' })(req, res, next);
