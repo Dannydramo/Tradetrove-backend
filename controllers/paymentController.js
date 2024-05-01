@@ -3,6 +3,7 @@ const Order = require('../models/orderModel');
 
 exports.createCheckoutSession = async (req, res, next) => {
     const stripe = new Stripe(process.env.STRIPE_KEY);
+    console.log(req.body);
     const customer = await stripe.customers.create({
         metadata: {
             userId: req.body.userId,
@@ -10,7 +11,6 @@ exports.createCheckoutSession = async (req, res, next) => {
             vendorId: req.body.vendorId,
         },
     });
-
     const line_items = req.body.cartItem.map((item) => {
         return {
             price_data: {
@@ -83,8 +83,8 @@ exports.createCheckoutSession = async (req, res, next) => {
         line_items,
         mode: 'payment',
         customer: customer.id,
-        success_url: `http://localhost:3000/`,
-        cancel_url: `http://localhost:3000/cart`,
+        success_url: `https://tradetrove.vercel.app/`,
+        cancel_url: `https://tradetrove.vercel.app/cart`,
     });
 
     res.send({ url: session.url });
@@ -123,6 +123,7 @@ exports.stripeWebhook = async (req, res) => {
         stripe.customers
             .retrieve(data.customer)
             .then(async (customer) => {
+                console.log(customer.metadata);
                 const userId = customer.metadata.userId;
                 const vendorId = customer.metadata.vendorId;
                 const cartItems = JSON.parse(customer.metadata.cart);
@@ -135,7 +136,7 @@ exports.stripeWebhook = async (req, res) => {
                     paymentStatus: data.payment_status,
                     totalPrice: data.amount_total / 100,
                 });
-
+                console.log(order);
                 await order.save();
             })
             .catch((err) => console.log(err.message));
