@@ -91,6 +91,7 @@ exports.createCheckoutSession = async (req, res, next) => {
 };
 
 exports.stripeWebhook = async (req, res) => {
+    console.log('Drasfhg');
     const stripe = new Stripe(process.env.STRIPE_KEY);
     let data;
     let eventType;

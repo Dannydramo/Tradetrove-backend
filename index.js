@@ -12,8 +12,7 @@ const app = express();
 
 app.use((req, res, next) => {
     if (req.originalUrl === '/api/v1/payment/webhook') {
-        console.log(req.originalUrl);
-        next();
+        express.raw({ type: 'application/json' })(req, res, next);
     } else {
         express.json()(req, res, next);
     }
