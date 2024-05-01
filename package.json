@@ -1,14 +1,12 @@
 {
     "name": "trade-trove-backend",
     "version": "1.0.0",
-    "description": "A multi-vendor ecommerce marketplace",
-    "main": "dist/server.js",
-    "type": "module",
+    "description": "A multi-vendor ecommerce application",
+    "main": "index.js",
     "scripts": {
-        "start": "node dist/server.js",
-        "build": "npm install && tsc",
-        "dev": "nodemon src/server.ts",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server.js",
+        "dev": "nodemon server.js"
     },
     "author": "Dannydramo",
     "license": "ISC",
@@ -28,17 +26,5 @@
         "socket.io": "^4.7.5",
         "stripe": "^15.2.0",
         "validator": "^13.11.0"
-    },
-    "devDependencies": {
-        "@types/bcryptjs": "^2.4.6",
-        "@types/cookie-parser": "^1.4.7",
-        "@types/cors": "^2.8.17",
-        "@types/express": "^4.17.21",
-        "@types/jsonwebtoken": "^9.0.6",
-        "@types/morgan": "^1.9.9",
-        "@types/validator": "^13.11.9",
-        "nodemon": "^3.1.0",
-        "ts-node-dev": "^2.0.0",
-        "typescript": "^5.4.3"
     }
 }
