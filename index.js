@@ -11,10 +11,7 @@ const globalErrorHandler = require('./controllers/errorController');
 const app = express();
 
 app.use((req, res, next) => {
-    if (
-        req.originalUrl ===
-        'https://tradetrove-backend.onrender.com/api/v1/payment/webhook'
-    ) {
+    if (req.originalUrl === '/api/v1/payment/webhook') {
         console.log(req.originalUrl);
         next();
     } else {
