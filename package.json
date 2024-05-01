@@ -2,12 +2,12 @@
     "name": "trade-trove-backend",
     "version": "1.0.0",
     "description": "A multi-vendor ecommerce marketplace",
-    "main": "index.ts",
+    "main": "src/index.ts",
     "type": "module",
     "scripts": {
         "start": "node ./build/server.js",
-        "build": "tsc",
-        "dev": "nodemon server.ts",
+        "build": "mpx tsc",
+        "dev": "nodemon src/server.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Dannydramo",
