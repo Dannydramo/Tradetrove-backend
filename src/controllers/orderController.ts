@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import catchAsync from './../utils/catchAsync';
-import Order from './../models/orderModel';
+import catchAsync from '../utils/catchAsync';
+import Order from '../models/orderModel';
 import AppError from '../utils/appError';
 import { ApiResponse } from '../helpers/responseHelper';
 

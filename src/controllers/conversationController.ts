@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import Conversation from './../models/conversationModel';
+import Conversation from '../models/conversationModel';
 import catchAsync from '../utils/catchAsync';
 import AppError from '../utils/appError';
 import { ApiResponse } from '../helpers/responseHelper';

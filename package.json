@@ -2,11 +2,11 @@
     "name": "trade-trove-backend",
     "version": "1.0.0",
     "description": "A multi-vendor ecommerce marketplace",
-    "main": "src/index.ts",
+    "main": "dist/server.js",
     "type": "module",
     "scripts": {
-        "start": "node ./build/server.js",
-        "build": "tsc",
+        "start": "node dist/server.js",
+        "build": "npm install && tsc",
         "dev": "nodemon src/server.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },

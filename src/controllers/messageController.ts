@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import Message from './../models/messageModel';
+import Message from '../models/messageModel';
 import catchAsync from '../utils/catchAsync';
 
 export const sendMessage = catchAsync(

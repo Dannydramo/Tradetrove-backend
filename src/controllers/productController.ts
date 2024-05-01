@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import catchAsync from './../utils/catchAsync';
-import Product from './../models/productModel';
+import catchAsync from '../utils/catchAsync';
+import Product from '../models/productModel';
 import AppError from '../utils/appError';
 import { ApiResponse } from '../helpers/responseHelper';
 
@@ -59,9 +59,8 @@ export const getAllProducts = catchAsync(
 export const getProductById = catchAsync(
     async (req: Request, res: Response, next: NextFunction) => {
         const { productId } = req.params;
-        const product = await Product.findById(productId)
-            .populate('vendor')
-            // .populate('reviews');
+        const product = await Product.findById(productId).populate('vendor');
+        // .populate('reviews');
         if (!product) {
             return next(new AppError('Could not find product details', 400));
         }

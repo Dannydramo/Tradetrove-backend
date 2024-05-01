@@ -1,5 +1,5 @@
-import Product from './../models/productModel';
-import Order from './../models/orderModel';
+import Product from '../models/productModel';
+import Order from '../models/orderModel';
 import mongoose from 'mongoose';
 
 export const calculateTotalUsersForVendor = async (

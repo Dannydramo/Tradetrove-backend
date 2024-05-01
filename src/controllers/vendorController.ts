@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import catchAsync from './../utils/catchAsync';
-import Vendor from './../models/vendorModel';
+import catchAsync from '../utils/catchAsync';
+import Vendor from '../models/vendorModel';
 import { createSendToken } from '../utils/createToken';
 import AppError from '../utils/appError';
 import { VendorFilteredBody } from '../types/VendorInterface';
@@ -12,7 +12,7 @@ import {
     calculateTotalUsersForVendor,
 } from '../helpers/vendorHelper';
 import { format } from 'date-fns';
-import Order from './../models/orderModel';
+import Order from '../models/orderModel';
 import mongoose from 'mongoose';
 declare global {
     namespace Express {

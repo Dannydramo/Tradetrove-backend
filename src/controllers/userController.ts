@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import catchAsync from './../utils/catchAsync';
-import User from './../models/userModel';
-import Vendor from './../models/vendorModel';
+import catchAsync from '../utils/catchAsync';
+import User from '../models/userModel';
+import Vendor from '../models/vendorModel';
 import { createSendToken } from '../utils/createToken';
 import AppError from '../utils/appError';
 import { ApiResponse } from '../helpers/responseHelper';

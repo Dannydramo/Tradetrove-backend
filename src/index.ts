@@ -1,12 +1,12 @@
 import express from 'express';
 
 // ERROR HANDLERS IMPORTS
-import AppError from '../utils/appError';
+import AppError from './utils/appError';
 import morgan from 'morgan';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import routes from '../routes/index';
-import globalErrorHandler from '../controllers/errorController';
+import routes from './routes/index';
+import globalErrorHandler from './controllers/errorController';
 const app = express();
 app.use((req, res, next) => {
     if (req.originalUrl === '/api/v1/payment/webhook') {
