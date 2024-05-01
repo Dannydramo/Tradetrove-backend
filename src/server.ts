@@ -1,7 +1,7 @@
-import index from './index';
+import index from '../index';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import setupSocket from './socket/socketSetup';
+import setupSocket from '../socket/socketSetup';
 
 dotenv.config({ path: './.env' });
 
