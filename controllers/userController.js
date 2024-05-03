@@ -57,3 +57,23 @@ exports.vendorByBusinessName = catchAsync(async (req, res, next) => {
         vendor
     );
 });
+
+exports.vendorsByState = catchAsync(async (req, res, next) => {
+    const { state } = req.params;
+    console.log(state);
+    const vendors = await Vendor.find({
+        state: { $regex: state, $options: 'i' },
+    });
+    if (!vendors) {
+        return next(
+            new AppError('Could not find any vendor in this state', 404)
+        );
+    }
+    return ApiResponse(
+        201,
+        res,
+        'Vendor fetched successfully',
+        'success',
+        vendors
+    );
+});
