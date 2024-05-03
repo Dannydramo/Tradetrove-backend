@@ -140,6 +140,49 @@ exports.getAllVendor = catchAsync(async (req, res, next) => {
     );
 });
 
+exports.getPopularVendors = catchAsync(async (req, res, next) => {
+    const topVendors = await Order.aggregate([
+        {
+            $group: {
+                _id: '$vendor',
+                totalOrders: { $sum: 1 },
+            },
+        },
+        {
+            $lookup: {
+                from: 'vendors',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'vendor',
+            },
+        },
+        {
+            $unwind: '$vendor',
+        },
+        {
+            $project: {
+                'vendor.password': 0,
+            },
+        },
+        {
+            $sort: { totalOrders: -1 },
+        },
+        {
+            $limit: 12,
+        },
+    ]);
+    if (!topVendors) {
+        return next(new AppError('Could not find any vendor', 400));
+    }
+    return ApiResponse(
+        201,
+        res,
+        'Vendors fetched successfully',
+        'success',
+        topVendors
+    );
+});
+
 exports.getVendorStatistics = catchAsync(async (req, res) => {
     const vendorId = req.vendor.id;
 

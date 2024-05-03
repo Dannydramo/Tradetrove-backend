@@ -2,6 +2,7 @@ const { ApiResponse } = require('../helpers/responseHelper');
 const catchAsync = require('../utils/catchAsync');
 const User = require('../models/userModel');
 const Vendor = require('../models/vendorModel');
+const Product = require('../models/productModel');
 const { createSendToken } = require('../utils/createToken');
 const AppError = require('../utils/appError');
 
@@ -60,7 +61,6 @@ exports.vendorByBusinessName = catchAsync(async (req, res, next) => {
 
 exports.vendorsByState = catchAsync(async (req, res, next) => {
     const { state } = req.params;
-    console.log(state);
     const vendors = await Vendor.find({
         state: { $regex: state, $options: 'i' },
     });
@@ -75,5 +75,31 @@ exports.vendorsByState = catchAsync(async (req, res, next) => {
         'Vendor fetched successfully',
         'success',
         vendors
+    );
+});
+
+exports.vendorsByCategory = catchAsync(async (req, res, next) => {
+    const { category } = req.params;
+
+    const products = await Product.find({ category }).populate('vendor');
+    if (!products) {
+        return next(
+            new AppError(
+                'Could not find a product that falls under this category'
+            )
+        );
+    }
+
+    const vendors = products.map((product) => product.vendor);
+    const uniqueVendors = vendors.filter(
+        (vendor, index, self) =>
+            index === self.findIndex((v) => v._id === vendor._id)
+    );
+    return ApiResponse(
+        201,
+        res,
+        'Vendor fetched successfully',
+        'success',
+        uniqueVendors
     );
 });
