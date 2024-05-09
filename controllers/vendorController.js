@@ -126,20 +126,6 @@ exports.changeVendorPassword = catchAsync(async (req, res, next) => {
     );
 });
 
-exports.getAllVendor = catchAsync(async (req, res, next) => {
-    const vendors = await Vendor.find();
-    if (!vendors) {
-        return next(new AppError('Could not find any vendor', 400));
-    }
-    return ApiResponse(
-        201,
-        res,
-        'Vendors fetched successfully',
-        'success',
-        vendors
-    );
-});
-
 exports.getPopularVendors = catchAsync(async (req, res, next) => {
     const topVendors = await Order.aggregate([
         {

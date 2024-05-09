@@ -79,12 +79,26 @@ exports.vendorsByState = catchAsync(async (req, res, next) => {
         });
     }
 
+    const requiredFields = [
+        'businessName',
+        'email',
+        'phoneNumber',
+        'address',
+        'city',
+        'state',
+        'country',
+    ];
+
+    const filteredVendors = vendors.filter((vendor) => {
+        return requiredFields.every((field) => vendor[field]);
+    });
+
     return ApiResponse(
         201,
         res,
         'Vendors fetched successfully',
         'success',
-        vendors
+        filteredVendors
     );
 });
 
