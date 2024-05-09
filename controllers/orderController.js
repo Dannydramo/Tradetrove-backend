@@ -5,7 +5,7 @@ const { ApiResponse } = require('../helpers/responseHelper');
 
 exports.getAllOrders = catchAsync(async (req, res, next) => {
     const orders = await Order.find({ vendor: req.vendor.id }).populate(
-        'user products'
+        'user products vendor'
     );
 
     if (!orders) {
@@ -22,7 +22,7 @@ exports.getAllOrders = catchAsync(async (req, res, next) => {
 
 exports.getUserOrders = catchAsync(async (req, res, next) => {
     const orders = await Order.find({ user: req.user.id }).populate(
-        'user products'
+        'user products vendor'
     );
 
     if (!orders) {

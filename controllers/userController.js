@@ -25,7 +25,7 @@ exports.loginUser = catchAsync(async (req, res, next) => {
     if (!user || !(await user.correctPassword(password, user.password))) {
         return next(new AppError('Incorrect email or password', 401));
     }
-    createSendToken(user, 201, res, 'Account created successfully');
+    createSendToken(user, 201, res, 'Logged in successfully');
 });
 
 exports.getUserdetails = catchAsync(async (req, res, next) => {
@@ -61,18 +61,28 @@ exports.vendorByBusinessName = catchAsync(async (req, res, next) => {
 
 exports.vendorsByState = catchAsync(async (req, res, next) => {
     const { state } = req.params;
-    const vendors = await Vendor.find({
-        state: { $regex: state, $options: 'i' },
-    });
-    if (!vendors) {
-        return next(
-            new AppError('Could not find any vendor in this state', 404)
-        );
+    const { category } = req.query;
+
+    let vendors;
+    if (category) {
+        const products = await Product.find({
+            category: { $regex: category, $options: 'i' },
+        });
+        const vendorIds = products.map((product) => product.vendor);
+        vendors = await Vendor.find({
+            _id: { $in: vendorIds },
+            state: { $regex: state, $options: 'i' },
+        });
+    } else {
+        vendors = await Vendor.find({
+            state: { $regex: state, $options: 'i' },
+        });
     }
+
     return ApiResponse(
         201,
         res,
-        'Vendor fetched successfully',
+        'Vendors fetched successfully',
         'success',
         vendors
     );

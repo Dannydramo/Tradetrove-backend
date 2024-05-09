@@ -1,4 +1,4 @@
-const Product = require('../models/productModel');
+const Product = require('../models/productModel').default;
 const Order = require('../models/orderModel');
 const mongoose = require('mongoose');
 
