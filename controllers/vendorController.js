@@ -1,6 +1,7 @@
 const { ApiResponse } = require('../helpers/responseHelper');
 const catchAsync = require('../utils/catchAsync');
 const Vendor = require('../models/vendorModel');
+const User = require('../models/userModel');
 const { createSendToken } = require('../utils/createToken');
 const AppError = require('../utils/appError');
 const {
@@ -12,6 +13,7 @@ const {
 const { format } = require('date-fns');
 const Order = require('../models/orderModel');
 const mongoose = require('mongoose');
+const sendEmail = require('../utils/email');
 
 const filterObj = (obj, ...allowedFields) => {
     const newObj = {};
@@ -43,6 +45,98 @@ exports.loginVendor = catchAsync(async (req, res, next) => {
         return next(new AppError('Incorrect email or password', 401));
     }
     createSendToken(vendor, 201, res, 'Login  successful');
+});
+
+exports.forgotVendorPassword = catchAsync(async (req, res, next) => {
+    const { email } = req.body;
+    const vendor = await Vendor.findOne({ email });
+    if (!vendor) {
+        return next(new AppError('There is no user with this email', 404));
+    }
+
+    const resetToken = vendor.createPasswordResetToken();
+    await vendor.save({ validateBeforeSave: false });
+
+    let frontendUrl;
+
+    if (process.env.NODE_ENV === 'production') {
+        frontendUrl = 'https://tradetrove-admin.vercel.app';
+    } else {
+        frontendUrl = 'http://localhost:3000' || 'http://localhost:3001';
+    }
+
+    const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
+
+    const message = `
+    <p>Forgot your password? Submit a patch request with your new password to the following link:</p>
+    <p><a target="_blank" href="${resetUrl}">Reset Password</a></p>
+    <p>If you didn't forget your password, please ignore this email.</p>
+`;
+
+    try {
+        await sendEmail({
+            email: vendor.email,
+            subject: 'Your password reset token (Valid for 10 minutes)',
+            message,
+        });
+        res.status(200).json({
+            status: 'success',
+            message: 'Please check your email for link to reset your password',
+        });
+    } catch (error) {
+        (vendor.passwordResetToken = undefined),
+            (vendor.passwordResetExpires = undefined);
+        await vendor.save({ validateBeforeSave: false });
+
+        return next(
+            new AppError(
+                'There was an error sending the email please try again later',
+                500
+            )
+        );
+    }
+});
+
+exports.resetVendorPassword = catchAsync(async (req, res, next) => {
+    const hashedToken = crypto
+        .createHash('sha256')
+        .update(req.params.token)
+        .digest('hex');
+
+    const vendor = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { $gt: Date.now() },
+    });
+
+    if (!vendor) {
+        return next(new AppError('Token is invalid or has expired', 400));
+    }
+
+    vendor.password = req.body.password;
+    vendor.confirmPassword = req.body.confirmPassword;
+    vendor.passwordResetToken = undefined;
+    vendor.passwordResetExpires = undefined;
+
+    await vendor.save();
+    createSendToken(vendor, 200, res);
+});
+
+exports.updateVendorPassword = catchAsync(async (req, res, next) => {
+    const vendor = await Vendor.findById(req.vendor.id).select('+password');
+
+    if (
+        !(await vendor.correctPassword(
+            req.body.passwordCurrent,
+            vendor.password
+        ))
+    ) {
+        return next(new AppError('Your current password is wrong', 401));
+    }
+
+    vendor.password = req.body.password;
+    vendor.confirmPassword = req.body.confirmPassword;
+    await vendor.save();
+    createSendToken(vendor, 200, res, 'Password updated sucessfull');
 });
 
 exports.getVendorDetails = catchAsync(async (req, res, next) => {
@@ -230,4 +324,16 @@ exports.getAllMonthSalesAmount = catchAsync(async (req, res) => {
         'success',
         payload
     );
+});
+
+exports.userById = catchAsync(async (req, res, next) => {
+    const { userId } = req.query;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+        return next(new AppError('User not found', 404));
+    }
+
+    return ApiResponse(201, res, 'User fetched successfully', 'success', user);
 });

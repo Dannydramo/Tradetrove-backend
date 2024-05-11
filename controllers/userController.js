@@ -5,6 +5,7 @@ const Vendor = require('../models/vendorModel');
 const Product = require('../models/productModel');
 const { createSendToken } = require('../utils/createToken');
 const AppError = require('../utils/appError');
+const sendEmail = require('../utils/email');
 
 exports.registerUser = catchAsync(async (req, res, next) => {
     const newUser = await User.create({
@@ -26,6 +27,96 @@ exports.loginUser = catchAsync(async (req, res, next) => {
         return next(new AppError('Incorrect email or password', 401));
     }
     createSendToken(user, 201, res, 'Logged in successfully');
+});
+
+exports.forgotUserPassword = catchAsync(async (req, res, next) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        return next(new AppError('There is no user with this email', 404));
+    }
+
+    const resetToken = user.createPasswordResetToken();
+    await user.save({ validateBeforeSave: false });
+
+    let frontendUrl;
+
+    if (process.env.NODE_ENV === 'production') {
+        frontendUrl = 'https://tradetrove.vercel.app';
+    } else {
+        frontendUrl = 'http://localhost:3001';
+    }
+
+    const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
+
+    const message = `
+    <p>Forgot your password? Submit a patch request with your new password to the following link:</p>
+    <p><a target="_blank" href="${resetUrl}">Reset Password</a></p>
+    <p>If you didn't forget your password, please ignore this email.</p>
+`;
+
+    try {
+        await sendEmail({
+            email: user.email,
+            subject: 'Your password reset token (Valid for 10 minutes)',
+            message,
+        });
+        res.status(200).json({
+            status: 'success',
+            message: 'Please check your email for link to reset your password',
+        });
+    } catch (error) {
+        (user.passwordResetToken = undefined),
+            (user.passwordResetExpires = undefined);
+        await user.save({ validateBeforeSave: false });
+
+        return next(
+            new AppError(
+                'There was an error sending the email please try again later',
+                500
+            )
+        );
+    }
+});
+
+exports.resetUserPassword = catchAsync(async (req, res, next) => {
+    const hashedToken = crypto
+        .createHash('sha256')
+        .update(req.params.token)
+        .digest('hex');
+
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+        return next(new AppError('Token is invalid or has expired', 400));
+    }
+
+    user.password = req.body.password;
+    user.confirmPassword = req.body.confirmPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+
+    await user.save();
+    createSendToken(user, 200, res);
+});
+
+exports.updateUserPassword = catchAsync(async (req, res, next) => {
+    const user = await User.findById(req.user.id).select('+password');
+
+    if (
+        !(await user.correctPassword(req.body.passwordCurrent, user.password))
+    ) {
+        return next(new AppError('Your current password is wrong', 401));
+    }
+
+    user.password = req.body.password;
+    user.confirmPassword = req.body.confirmPassword;
+    await user.save();
+    createSendToken(user, 200, res, 'Password updated sucessfull');
 });
 
 exports.getUserdetails = catchAsync(async (req, res, next) => {
