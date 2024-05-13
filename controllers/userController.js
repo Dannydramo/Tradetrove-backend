@@ -130,6 +130,31 @@ exports.getUserdetails = catchAsync(async (req, res, next) => {
     return ApiResponse(201, res, 'user fetched successfully', 'success', user);
 });
 
+exports.changeUserPassword = catchAsync(async (req, res, next) => {
+    const { password, newPassword, confirmNewPassword } = req.body;
+    const user = await User.findById(req.user.id).select('+password');
+
+    if (!user) {
+        return next(new AppError('Vendor not found', 404));
+    }
+
+    if (!(await user.correctPassword(password, user.password))) {
+        return next(new AppError('Your current password is wrong', 401));
+    }
+
+    user.password = newPassword;
+    user.confirmPassword = confirmNewPassword;
+    await user.save();
+
+    return ApiResponse(
+        201,
+        res,
+        'Password changed successfully',
+        'success',
+        null
+    );
+});
+
 exports.vendorByBusinessName = catchAsync(async (req, res, next) => {
     const { businessName, vendorId } = req.query;
 

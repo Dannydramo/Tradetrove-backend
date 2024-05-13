@@ -24,6 +24,7 @@ router.post('/auth/login', loginVendor);
 router.post('/auth/forgot-password', forgotVendorPassword);
 router.patch('/auth/reset-password/:token', resetVendorPassword);
 router.patch('/auth/update-password', vendorProtect, updateVendorPassword);
+router.patch('/auth/change-password', vendorProtect, changeVendorPassword);
 router.get('/get-vendor-details', vendorProtect, getVendorDetails);
 router.patch('/update-details', vendorProtect, updateVendorDetails);
 router.patch('/change-password', vendorProtect, changeVendorPassword);
