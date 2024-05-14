@@ -10,13 +10,14 @@ const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
-app.use((req, res, next) => {
-    if (req.originalUrl === '/api/v1/payment/webhook') {
-        express.raw({ type: 'application/json' })(req, res, next);
-    } else {
-        express.json()(req, res, next);
-    }
-});
+app.use(express.json());
+// app.use((req, res, next) => {
+//     if (req.originalUrl === '/api/v1/payment/webhook') {
+//         express.raw({ type: 'application/json' })(req, res, next);
+//     } else {
+//         express.json()(req, res, next);
+//     }
+// });
 
 app.use(cors());
 
