@@ -101,8 +101,10 @@ exports.stripeWebhook = async (req, res) => {
         let signature = req.headers['stripe-signature'];
 
         try {
+            const rawBody = req.body;
+            console.log(rawBody);
             event = stripe.webhooks.constructEvent(
-                req.body,
+                rawBody,
                 signature,
                 webhookSecret
             );
