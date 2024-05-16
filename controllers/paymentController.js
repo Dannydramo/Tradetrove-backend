@@ -101,7 +101,7 @@ exports.stripeWebhook = async (req, res) => {
         let signature = req.headers['stripe-signature'];
 
         try {
-            const rawBody = req.body;
+            const rawBody = req.body.toString('utf-8');
             console.log(rawBody);
             event = stripe.webhooks.constructEvent(
                 rawBody,
