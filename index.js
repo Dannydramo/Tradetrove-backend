@@ -7,8 +7,14 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const routes = require('./routes/index');
 const globalErrorHandler = require('./controllers/errorController');
+const { stripeWebhook } = require('./controllers/paymentController');
 
 const app = express();
+app.post(
+    '/api/v1/payment/webhook',
+    express.raw({ type: 'application/json' }),
+    stripeWebhookeWebhook
+);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // app.use((req, res, next) => {
