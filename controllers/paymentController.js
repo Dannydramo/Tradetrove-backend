@@ -99,18 +99,13 @@ exports.stripeWebhook = async (req, res) => {
     if (webhookSecret) {
         let event;
         let signature = req.headers['stripe-signature'];
-        console.log(signature);
-        console.log('Sigature');
-        console.log(req.body);
+
         try {
-            const rawBody = req.body.toString('utf-8');
-            console.log(rawBody);
             event = stripe.webhooks.constructEvent(
                 req.body,
                 signature,
                 webhookSecret
             );
-            console.log('Stripe is working now');
         } catch (err) {
             console.log(` Webhook signature verification failed:  ${err}`);
             return res.sendStatus(400);
@@ -118,18 +113,15 @@ exports.stripeWebhook = async (req, res) => {
 
         data = event.data.object;
         eventType = event.type;
-        console.log('Stripe is working now');
     } else {
         data = req.body.data.object;
         eventType = req.body.type;
-        console.log('Stripe is working now');
     }
     console.log(eventType);
     if (eventType === 'checkout.session.completed') {
         stripe.customers
             .retrieve(data.customer)
             .then(async (customer) => {
-                console.log(customer.metadata);
                 const userId = customer.metadata.userId;
                 const vendorId = customer.metadata.vendorId;
                 const cartItems = JSON.parse(customer.metadata.cart);
@@ -142,7 +134,7 @@ exports.stripeWebhook = async (req, res) => {
                     paymentStatus: data.payment_status,
                     totalPrice: data.amount_total / 100,
                 });
-                console.log(order);
+
                 await order.save();
             })
             .catch((err) => console.log(err.message));
