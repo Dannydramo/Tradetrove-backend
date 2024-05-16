@@ -99,7 +99,9 @@ exports.stripeWebhook = async (req, res) => {
     if (webhookSecret) {
         let event;
         let signature = req.headers['stripe-signature'];
-
+        console.log(signature);
+        console.log('Sigature');
+        console.log(req.body);
         try {
             const rawBody = req.body.toString('utf-8');
             console.log(rawBody);
@@ -110,7 +112,7 @@ exports.stripeWebhook = async (req, res) => {
             );
             console.log('Stripe is working now');
         } catch (err) {
-            console.log(`⚠️  Webhook signature verification failed:  ${err}`);
+            console.log(` Webhook signature verification failed:  ${err}`);
             return res.sendStatus(400);
         }
 
