@@ -82,7 +82,7 @@ exports.createCheckoutSession = async (req, res, next) => {
         line_items,
         mode: 'payment',
         customer: customer.id,
-        success_url: `https://tradetrove.vercel.app/`,
+        success_url: `https://tradetrove.vercel.app/checkout-success?vendorId=${req.body.vendorId}`,
         cancel_url: `https://tradetrove.vercel.app/cart`,
     });
 
