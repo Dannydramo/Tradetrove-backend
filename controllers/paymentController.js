@@ -3,7 +3,6 @@ const Order = require('../models/orderModel');
 
 exports.createCheckoutSession = async (req, res, next) => {
     const stripe = new Stripe(process.env.STRIPE_KEY);
-    console.log(req.body);
     const customer = await stripe.customers.create({
         metadata: {
             userId: req.body.userId,
@@ -102,8 +101,6 @@ exports.stripeWebhook = async (req, res) => {
         let signature = req.headers['stripe-signature'];
 
         try {
-            const buf = req.body;
-            console.log(buf);
             event = stripe.webhooks.constructEvent(
                 req.body,
                 signature,
@@ -117,11 +114,13 @@ exports.stripeWebhook = async (req, res) => {
 
         data = event.data.object;
         eventType = event.type;
+        console.log('Stripe is working now');
     } else {
         data = req.body.data.object;
         eventType = req.body.type;
+        console.log('Stripe is working now');
     }
-
+    console.log(eventType);
     if (eventType === 'checkout.session.completed') {
         stripe.customers
             .retrieve(data.customer)
