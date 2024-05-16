@@ -13,7 +13,7 @@ const app = express();
 app.post(
     '/api/v1/payment/webhook',
     express.raw({ type: 'application/json' }),
-    stripeWebhookeWebhook
+    stripeWebhook
 );
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
