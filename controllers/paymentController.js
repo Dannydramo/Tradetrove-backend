@@ -109,6 +109,7 @@ exports.stripeWebhook = async (req, res) => {
                 signature,
                 webhookSecret
             );
+            console.log('Stripe is working now');
         } catch (err) {
             console.log(`⚠️  Webhook signature verification failed:  ${err}`);
             return res.sendStatus(400);
