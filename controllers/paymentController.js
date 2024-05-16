@@ -91,7 +91,6 @@ exports.createCheckoutSession = async (req, res, next) => {
 };
 
 exports.stripeWebhook = async (req, res) => {
-    console.log('Drasfhg');
     const stripe = new Stripe(process.env.STRIPE_KEY);
     let data;
     let eventType;
@@ -103,7 +102,7 @@ exports.stripeWebhook = async (req, res) => {
         let signature = req.headers['stripe-signature'];
 
         try {
-            const buf = req.rawBody;
+            const buf = req.body;
             console.log(buf);
             event = stripe.webhooks.constructEvent(
                 req.body,
