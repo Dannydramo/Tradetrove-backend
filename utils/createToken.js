@@ -14,9 +14,12 @@ const createSendToken = (user, statusCode, res, message) => {
                 Number(process.env.JWT_COOKIE_EXPIRES_IN) * 60 * 60 * 1000
         ),
         httpOnly: true,
+        sameSite: 'none',
+        partition: true,
+        secure: true,
     };
 
-    if (process.env.NODE_ENV === 'production') cookiesOption.secure = true;
+    // if (process.env.NODE_ENV === 'production') cookiesOption.secure = true;
 
     res.cookie('token', token, cookiesOption);
     user.password = undefined;

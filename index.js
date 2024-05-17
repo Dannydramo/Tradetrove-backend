@@ -19,7 +19,26 @@ app.use((req, res, next) => {
 });
 app.use(express.urlencoded({ extended: true }));
 
-app.use(cors());
+const allowedDomains = [
+    'https://tradetrove.vercel.app',
+    'https://tradetrove-admin.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:3001',
+];
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (allowedDomains.indexOf(origin) !== -1 || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    optionsSuccessStatus: 200,
+    credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
