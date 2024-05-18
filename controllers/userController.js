@@ -155,6 +155,16 @@ exports.changeUserPassword = catchAsync(async (req, res, next) => {
     );
 });
 
+exports.logOutUser = catchAsync(async (req, res, next) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        sameSite: 'none',
+        partition: true,
+        secure: true,
+    });
+    return ApiResponse(201, res, 'Logged out successfully', 'success', null);
+});
+
 exports.vendorByBusinessName = catchAsync(async (req, res, next) => {
     const { businessName, vendorId } = req.query;
 

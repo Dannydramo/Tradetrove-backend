@@ -13,6 +13,7 @@ const {
     forgotVendorPassword,
     resetVendorPassword,
     updateVendorPassword,
+    logOutVendor,
 } = require('../controllers/vendorController');
 const { getProductsByVendor } = require('../controllers/productController');
 const { vendorProtect } = require('../middleware/authMiddleware');
@@ -22,6 +23,7 @@ const router = express.Router();
 router.post('/auth/register', registerVendor);
 router.post('/auth/login', loginVendor);
 router.post('/auth/forgot-password', forgotVendorPassword);
+router.get('/auth/logout', vendorProtect, logOutVendor);
 router.patch('/auth/reset-password/:token', resetVendorPassword);
 router.patch('/auth/update-password', vendorProtect, updateVendorPassword);
 router.patch('/auth/change-password', vendorProtect, changeVendorPassword);

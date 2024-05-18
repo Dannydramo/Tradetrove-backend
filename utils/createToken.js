@@ -19,8 +19,6 @@ const createSendToken = (user, statusCode, res, message) => {
         secure: true,
     };
 
-    // if (process.env.NODE_ENV === 'production') cookiesOption.secure = true;
-
     res.cookie('token', token, cookiesOption);
     user.password = undefined;
     res.status(statusCode).json({

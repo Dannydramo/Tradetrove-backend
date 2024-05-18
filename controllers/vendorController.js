@@ -47,6 +47,16 @@ exports.loginVendor = catchAsync(async (req, res, next) => {
     createSendToken(vendor, 201, res, 'Login  successful');
 });
 
+exports.logOutVendor = catchAsync(async (req, res, next) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        sameSite: 'none',
+        partition: true,
+        secure: true,
+    });
+    return ApiResponse(201, res, 'Logged out successfully', 'success', null);
+});
+
 exports.forgotVendorPassword = catchAsync(async (req, res, next) => {
     const { email } = req.body;
     const vendor = await Vendor.findOne({ email });
