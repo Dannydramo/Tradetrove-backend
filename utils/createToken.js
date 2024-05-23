@@ -14,7 +14,7 @@ const createSendToken = (user, statusCode, res, message) => {
                 Number(process.env.JWT_COOKIE_EXPIRES_IN) * 60 * 60 * 1000
         ),
         httpOnly: true,
-        sameSite: 'none',
+        sameSite: 'None',
         partition: true,
         secure: true,
     };
