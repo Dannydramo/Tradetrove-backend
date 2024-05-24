@@ -38,7 +38,7 @@ exports.getUserOrders = catchAsync(async (req, res, next) => {
 });
 
 exports.getUserRecentOrder = catchAsync(async (req, res, next) => {
-    const recentOrder = await Order.findOne({
+    const recentOrder = await Order.find({
         user: req.user.id,
         vendor: req.query.vendorId,
     }).sort({
@@ -51,6 +51,24 @@ exports.getUserRecentOrder = catchAsync(async (req, res, next) => {
         201,
         res,
         'Orders fetched Successfully',
+        'success',
+        recentOrder
+    );
+});
+
+exports.getVendorRecentOrder = catchAsync(async (req, res, next) => {
+    const recentOrder = await Order.find({ vendor: req.vendor.id })
+        .sort({ createdAt: -1 })
+        .populate('user products vendor')
+        .limit(10);
+
+    if (!recentOrder) {
+        return next(new AppError('No recent orders found for the vendor', 404));
+    }
+    return ApiResponse(
+        201,
+        res,
+        'Recent order fetched successfully',
         'success',
         recentOrder
     );

@@ -14,13 +14,6 @@ const createSendToken = (user, statusCode, res, message) => {
                 Number(process.env.JWT_COOKIE_EXPIRES_IN) * 60 * 60 * 1000
         ),
         httpOnly: true,
-        domains: [
-            'http://localhost:3000',
-            'http://localhost:3001',
-            'htpps://tradetrove.vercel.app',
-            'https://tradetrove-admin.vercel.app',
-        ],
-        path: '/',
         sameSite: 'None',
         partition: true,
         secure: true,

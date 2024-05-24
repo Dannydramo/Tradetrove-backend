@@ -278,11 +278,9 @@ exports.getVendorStatistics = catchAsync(async (req, res) => {
 
     const totalUsers = await calculateTotalUsersForVendor(vendorId);
     const totalSales = await calculateTotalSalesForVendor(vendorId);
-    const totalAmount = await calculateTotalAmount(vendorId);
     const totalProducts = await calculateTotalProductsForVendor(vendorId);
 
     const payload = {
-        totalAmount,
         totalProducts,
         totalSales,
         totalUsers,

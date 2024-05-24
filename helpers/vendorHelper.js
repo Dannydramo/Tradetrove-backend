@@ -37,7 +37,7 @@ const calculateTotalAmount = async (vendorId) => {
             { $match: { vendor: vendorId } },
             { $group: { _id: null, totalAmount: { $sum: '$totalPrice' } } },
         ]);
-
+        console.log(totalAmountResult);
         return totalAmountResult.length > 0
             ? totalAmountResult[0].totalAmount
             : 0;
@@ -62,6 +62,5 @@ const calculateTotalProductsForVendor = async (vendorId) => {
 module.exports = {
     calculateTotalUsersForVendor,
     calculateTotalSalesForVendor,
-    calculateTotalAmount,
     calculateTotalProductsForVendor,
 };
