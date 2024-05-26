@@ -264,12 +264,22 @@ exports.getPopularVendors = catchAsync(async (req, res, next) => {
     if (!topVendors) {
         return next(new AppError('Could not find any vendor', 400));
     }
+    if (topVendors.length === 0) {
+        const vendors = await Vendor.find().limit(10);
+        return ApiResponse(
+            201,
+            res,
+            'Vendors fetched successfully',
+            'success',
+            vendors
+        );
+    }
     return ApiResponse(
         201,
         res,
         'Vendors fetched successfully',
         'success',
-        topVendors
+        topVendors.vendor
     );
 });
 
