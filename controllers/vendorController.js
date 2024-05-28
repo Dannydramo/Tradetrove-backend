@@ -5,7 +5,6 @@ const User = require('../models/userModel');
 const { createSendToken } = require('../utils/createToken');
 const AppError = require('../utils/appError');
 const {
-    calculateTotalAmount,
     calculateTotalProductsForVendor,
     calculateTotalSalesForVendor,
     calculateTotalUsersForVendor,
