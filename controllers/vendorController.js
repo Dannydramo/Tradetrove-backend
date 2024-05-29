@@ -25,11 +25,15 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 exports.registerVendor = catchAsync(async (req, res, next) => {
+    const { businessName, email, password, confirmPassword } = req.body;
+    if (!businessName || !email || !password || !confirmPassword) {
+        return next(new AppError('Please provide all your details', 400));
+    }
     const newVendor = await Vendor.create({
-        businessName: req.body.businessName,
-        email: req.body.email,
-        password: req.body.password,
-        confirmPassword: req.body.confirmPassword,
+        businessName,
+        email,
+        password,
+        confirmPassword,
     });
     createSendToken(newVendor, 201, res, 'Account created successfully');
 });
@@ -264,7 +268,10 @@ exports.getPopularVendors = catchAsync(async (req, res, next) => {
         return next(new AppError('Could not find any vendor', 400));
     }
     if (topVendors.length === 0) {
-        const vendors = await Vendor.find().limit(10);
+        const vendors = await Vendor.find({
+            logo: { $exists: true, $ne: null, $ne: '' },
+            phoneNumber: { $exists: true, $ne: null, $ne: '' },
+        }).limit(10);
         return ApiResponse(
             201,
             res,

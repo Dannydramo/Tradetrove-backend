@@ -8,11 +8,15 @@ const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 
 exports.registerUser = catchAsync(async (req, res, next) => {
+    const { userName, password, email, confirmPassword } = req.body;
+    if (!userName || !email || !password || !confirmPassword) {
+        return next(new AppError('Please provide all your details', 400));
+    }
     const newUser = await User.create({
-        username: req.body.userName,
-        email: req.body.email,
-        password: req.body.password,
-        confirmPassword: req.body.confirmPassword,
+        username: userName,
+        email,
+        password,
+        confirmPassword,
     });
     createSendToken(newUser, 201, res, 'Account created successfully');
 });
