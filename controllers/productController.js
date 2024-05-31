@@ -1,6 +1,7 @@
 const { ApiResponse } = require('../helpers/responseHelper');
 const catchAsync = require('../utils/catchAsync');
 const Product = require('../models/productModel');
+const Vendor = require('../models/vendorModel');
 const AppError = require('../utils/appError');
 
 exports.createProduct = catchAsync(async (req, res, next) => {
@@ -116,5 +117,39 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
         'Product deleted Successfully',
         'success',
         null
+    );
+});
+
+exports.getTwoRandomProducts = catchAsync(async (req, res, next) => {
+    const randomProducts = await Product.aggregate([
+        { $sample: { size: 20 } },
+        {
+            $lookup: {
+                from: 'vendors',
+                localField: 'vendor',
+                foreignField: '_id',
+                as: 'vendorDetails',
+            },
+        },
+        {
+            $unwind: '$vendorDetails',
+        },
+        {
+            $project: {
+                'vendorDetails.password': 0,
+            },
+        },
+    ]);
+
+    if (!randomProducts.length) {
+        return next(new AppError('Could not find any products', 404));
+    }
+
+    return ApiResponse(
+        200,
+        res,
+        'Random products from each vendor fetched successfully',
+        'success',
+        randomProducts
     );
 });
