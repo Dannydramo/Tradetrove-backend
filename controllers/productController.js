@@ -1,7 +1,6 @@
 const { ApiResponse } = require('../helpers/responseHelper');
 const catchAsync = require('../utils/catchAsync');
 const Product = require('../models/productModel');
-const Vendor = require('../models/vendorModel');
 const AppError = require('../utils/appError');
 
 exports.createProduct = catchAsync(async (req, res, next) => {
@@ -57,6 +56,25 @@ exports.getProductById = catchAsync(async (req, res, next) => {
         'Product fetched Successfully',
         'success',
         product
+    );
+});
+
+exports.getLatestProduct = catchAsync(async (req, res, next) => {
+    const latestProduct = await Product.find()
+        .sort({ createdAt: -1 })
+        .populate('vendor')
+        .limit(4);
+
+    if (!latestProduct) {
+        return next(new AppError('No products found', 404));
+    }
+
+    return ApiResponse(
+        200,
+        res,
+        'Latest product fetched successfully',
+        'success',
+        latestProduct
     );
 });
 

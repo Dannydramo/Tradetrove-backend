@@ -6,12 +6,14 @@ const {
     getAllProducts,
     getProductById,
     getTwoRandomProducts,
+    getLatestProduct,
 } = require('../controllers/productController');
 const { vendorProtect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
 router.get('/', getAllProducts);
+router.get('/latest', getLatestProduct);
 router.get('/random-products', getTwoRandomProducts);
 router.get('/:productId', getProductById);
 router.post('/create', vendorProtect, createProduct);

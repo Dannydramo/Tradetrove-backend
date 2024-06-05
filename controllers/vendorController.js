@@ -261,7 +261,7 @@ exports.getPopularVendors = catchAsync(async (req, res, next) => {
             $sort: { totalOrders: -1 },
         },
         {
-            $limit: 12,
+            $limit: 8,
         },
     ]);
     if (!topVendors) {
