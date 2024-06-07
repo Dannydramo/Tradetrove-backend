@@ -6,7 +6,7 @@ const { ApiResponse } = require('../helpers/responseHelper');
 exports.getUserWishlist = catchAsync(async (req, res, next) => {
     const userId = req.user.id;
 
-    const wishlist = await Wishlist.find({ user: userId }).populate('product');
+    const wishlist = await Wishlist.find({ user: userId }).populate('product').sort({ createdAt: -1 });
     return ApiResponse(
         200,
         res,
