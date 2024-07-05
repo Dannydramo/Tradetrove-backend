@@ -272,6 +272,7 @@ exports.getPopularVendors = catchAsync(async (req, res, next) => {
             logo: { $exists: true, $ne: null, $ne: '' },
             phoneNumber: { $exists: true, $ne: null, $ne: '' },
         }).limit(10);
+
         return ApiResponse(
             201,
             res,
@@ -280,12 +281,13 @@ exports.getPopularVendors = catchAsync(async (req, res, next) => {
             vendors
         );
     }
+    const vendors = topVendors.map((item) => item.vendor);
     return ApiResponse(
         201,
         res,
         'Vendors fetched successfully',
         'success',
-        topVendors.vendor
+        vendors
     );
 });
 
