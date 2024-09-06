@@ -7,7 +7,8 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const routes = require('./routes/index');
 const globalErrorHandler = require('./controllers/errorController');
-
+const swaggerUI = require('swagger-ui-express');
+const docs = require("./api-docs");
 const app = express();
 
 app.use((req, res, next) => {
@@ -61,6 +62,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 app.use(cookieParser());
 app.use('/api/v1', routes);
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(docs));
 
 app.all('*', (req, res, next) => {
     next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));

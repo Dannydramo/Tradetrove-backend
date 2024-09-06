@@ -233,63 +233,96 @@ exports.changeVendorPassword = catchAsync(async (req, res, next) => {
     );
 });
 
-exports.getPopularVendors = catchAsync(async (req, res, next) => {
-    const topVendors = await Order.aggregate([
-        {
-            $group: {
-                _id: '$vendor',
-                totalOrders: { $sum: 1 },
-            },
-        },
-        {
-            $lookup: {
-                from: 'vendors',
-                localField: '_id',
-                foreignField: '_id',
-                as: 'vendor',
-            },
-        },
-        {
-            $unwind: '$vendor',
-        },
-        {
-            $project: {
-                'vendor.password': 0,
-            },
-        },
-        {
-            $sort: { totalOrders: -1 },
-        },
-        {
-            $limit: 8,
-        },
-    ]);
-    if (!topVendors) {
-        return next(new AppError('Could not find any vendor', 400));
-    }
-    if (topVendors.length === 0) {
-        const vendors = await Vendor.find({
-            logo: { $exists: true, $ne: null, $ne: '' },
-            phoneNumber: { $exists: true, $ne: null, $ne: '' },
-        }).limit(10);
-
-        return ApiResponse(
-            201,
-            res,
-            'Vendors fetched successfully',
-            'success',
-            vendors
-        );
-    }
-    const vendors = topVendors.map((item) => item.vendor);
+exports.getAllVendors = catchAsync(async (req, res, next) => {
+    const vendors = await Vendor.find();
+    if (!vendors) return next(new AppError('Vendors not found', 404));
     return ApiResponse(
-        201,
+        200,
         res,
         'Vendors fetched successfully',
         'success',
         vendors
     );
 });
+
+exports.getLatestVendors = catchAsync(async (req, res, next) => {
+    const latestVendors = await Vendor.find({
+        logo: { $exists: true, $ne: null, $ne: '' },
+        phoneNumber: { $exists: true, $ne: null, $ne: '' },
+    })
+        .sort({ createdAt: -1 })
+        .limit(10);
+
+    if (!latestVendors) {
+        return next(new AppError('No vendors found', 404));
+    }
+
+    return ApiResponse(
+        200,
+        res,
+        'Latest vendors fetched successfully',
+        'success',
+        latestVendors
+    );
+});
+
+// exports.getPopularVendors = catchAsync(async (req, res, next) => {
+//     const topVendors = await Order.aggregate([
+//         {
+//             $group: {
+//                 _id: '$vendor',
+//                 totalOrders: { $sum: 1 },
+//             },
+//         },
+//         {
+//             $lookup: {
+//                 from: 'vendors',
+//                 localField: '_id',
+//                 foreignField: '_id',
+//                 as: 'vendor',
+//             },
+//         },
+//         {
+//             $unwind: '$vendor',
+//         },
+//         {
+//             $project: {
+//                 'vendor.password': 0,
+//             },
+//         },
+//         {
+//             $sort: { totalOrders: -1 },
+//         },
+//         {
+//             $limit: 8,
+//         },
+//     ]);
+//     if (!topVendors) {
+//         return next(new AppError('Could not find any vendor', 400));
+//     }
+//     if (topVendors.length === 0) {
+//         const vendors = await Vendor.find({
+//             logo: { $exists: true, $ne: null, $ne: '' },
+//             phoneNumber: { $exists: true, $ne: null, $ne: '' },
+//         }).limit(10);
+
+//         return ApiResponse(
+//             201,
+//             res,
+//             'Vendors fetched successfully',
+//             'success',
+//             vendors
+//         );
+//     }
+//     const vendors = topVendors.map((item) => item.vendor);
+//     return ApiResponse(
+//         201,
+//         res,
+//         'Vendors fetched successfully',
+//         'success',
+//         vendors
+//     );
+// });
 
 exports.getVendorStatistics = catchAsync(async (req, res) => {
     const vendorId = req.vendor.id;

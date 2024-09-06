@@ -117,7 +117,7 @@ exports.stripeWebhook = async (req, res) => {
         data = req.body.data.object;
         eventType = req.body.type;
     }
-    console.log(eventType);
+
     if (eventType === 'checkout.session.completed') {
         stripe.customers
             .retrieve(data.customer)
